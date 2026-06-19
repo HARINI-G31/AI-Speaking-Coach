@@ -1,3 +1,4 @@
+import os
 import cv2
 
 
@@ -23,3 +24,32 @@ def get_video_metadata(video_path):
         "fps": round(fps, 2),
         "resolution": f"{width} x {height}"
     }
+
+
+def extract_frames(video_path, output_dir, frame_interval=30):
+    os.makedirs(output_dir, exist_ok=True)
+
+    cap = cv2.VideoCapture(video_path)
+
+    frame_paths = []
+    frame_count = 0
+
+    while cap.isOpened():
+        success, frame = cap.read()
+
+        if not success:
+            break
+
+        if frame_count % frame_interval == 0:
+            frame_name = f"frame_{frame_count}.jpg"
+            frame_path = os.path.join(output_dir, frame_name)
+
+            cv2.imwrite(frame_path, frame)
+
+            frame_paths.append(frame_path)
+
+        frame_count += 1
+
+    cap.release()
+
+    return frame_paths

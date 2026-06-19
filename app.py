@@ -1,7 +1,10 @@
 import os
 import streamlit as st
 
-from services.video_processor import get_video_metadata
+from services.video_processor import (
+    get_video_metadata,
+    extract_frames
+)
 
 st.set_page_config(
     page_title="AI Public Speaking Coach",
@@ -57,3 +60,28 @@ if video:
             )
     else:
         st.error("Unable to process the uploaded video.")
+
+    frame_dir = os.path.join(
+        "data",
+        "processed",
+        "frames"
+    )
+
+    frame_paths = extract_frames(
+        save_path,
+        frame_dir
+    )
+
+    if frame_paths:
+        st.subheader("🖼️ Extracted Frames")
+
+        preview_frames = frame_paths[:6]
+
+        cols = st.columns(3)
+
+        for index, frame_path in enumerate(preview_frames):
+            with cols[index % 3]:
+                st.image(
+                    frame_path,
+                    use_container_width=True
+                )
